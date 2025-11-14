@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import AuthPage from './pages/auth/AuthPage';
 import { toast } from './methods/notify';
 import FormPage from './pages/form/FormPage';
+import FillPage from './pages/fill/FillPage';
 
 const PrivateRoute = ({ redirectPath = '/auth' }) => {
   // 检查 localStorage 中的 token
@@ -20,6 +21,7 @@ const App = () => {
 
         <Route element={<PrivateRoute />}>
           <Route path="/form" element={<FormPage />} />
+          <Route path="/fill" element={<FillPage />} />
         </Route>
         <Route path="/" element={<Navigate to="/form" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
