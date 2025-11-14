@@ -1,5 +1,3 @@
-import { FormFieldRadioImpl } from "../impl";
-import { FieldType } from "../impl/field";
 import { BaseRequest, BaseResponse, BaseRouterInstance } from "../lib/decorator";
 
 export class FormFieldRadioRouterInstance extends BaseRouterInstance {
@@ -10,31 +8,43 @@ export class FormFieldRadioRouterInstance extends BaseRouterInstance {
             name: "create",
             path: "/create",
             method: "post",
-            handler: Function
+            handler: Function,
         },
         {
             name: "update",
             path: "/update",
             method: "post",
-            handler: Function
+            handler: Function,
         },
         {
             name: "del",
             path: "/del",
             method: "post",
-            handler: Function
+            handler: Function,
         },
-    ]
+    ];
 
-    create: (request: FormFieldRadioCreateRequest, callback?: Function) => Promise<FormFieldRadioCreateResponse>
-    update: (request: FormFieldRadioUpdateRequest, callback?: Function) => Promise<FormFieldRadioUpdateResponse>
-    del: (request: FormFieldRadioDeleteRequest, callback?: Function) => Promise<FormFieldRadioDeleteResponse>
+    create: (request: FormFieldRadioCreateRequest, callback?: Function) => Promise<FormFieldRadioCreateResponse>;
+    update: (request: FormFieldRadioUpdateRequest, callback?: Function) => Promise<FormFieldRadioUpdateResponse>;
+    del: (request: FormFieldRadioDeleteRequest, callback?: Function) => Promise<FormFieldRadioDeleteResponse>;
 
-    constructor(inject: Function, functions?: {
-        create: (request: FormFieldRadioCreateRequest, callback?: Function) => Promise<FormFieldRadioCreateResponse>
-        update: (request: FormFieldRadioUpdateRequest, callback?: Function) => Promise<FormFieldRadioUpdateResponse>
-        del: (request: FormFieldRadioDeleteRequest) => Promise<FormFieldRadioDeleteResponse>
-    }) { super(); inject(this, functions); }
+    constructor(
+        inject: Function,
+        functions?: {
+            create: (
+                request: FormFieldRadioCreateRequest,
+                callback?: Function,
+            ) => Promise<FormFieldRadioCreateResponse>;
+            update: (
+                request: FormFieldRadioUpdateRequest,
+                callback?: Function,
+            ) => Promise<FormFieldRadioUpdateResponse>;
+            del: (request: FormFieldRadioDeleteRequest) => Promise<FormFieldRadioDeleteResponse>;
+        },
+    ) {
+        super();
+        inject(this, functions);
+    }
 }
 
 export interface FormFieldRadioCreateRequest extends BaseRequest {
@@ -42,7 +52,7 @@ export interface FormFieldRadioCreateRequest extends BaseRequest {
     radio_name: string;
 }
 
-export interface FormFieldRadioCreateResponse extends BaseResponse { }
+export interface FormFieldRadioCreateResponse extends BaseResponse {}
 
 export interface FormFieldRadioUpdateRequest extends BaseRequest {
     radio_id: string;
@@ -50,10 +60,10 @@ export interface FormFieldRadioUpdateRequest extends BaseRequest {
     useful?: boolean;
 }
 
-export interface FormFieldRadioUpdateResponse extends BaseResponse { }
+export interface FormFieldRadioUpdateResponse extends BaseResponse {}
 
 export interface FormFieldRadioDeleteRequest extends BaseRequest {
     radio_id: string;
 }
 
-export interface FormFieldRadioDeleteResponse extends BaseResponse { }
+export interface FormFieldRadioDeleteResponse extends BaseResponse {}

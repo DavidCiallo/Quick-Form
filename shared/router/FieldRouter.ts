@@ -10,39 +10,45 @@ export class FormFieldRouterInstance extends BaseRouterInstance {
             name: "list",
             path: "/list",
             method: "get",
-            handler: Function
+            handler: Function,
         },
         {
             name: "create",
             path: "/create",
             method: "post",
-            handler: Function
+            handler: Function,
         },
         {
             name: "update",
             path: "/update",
             method: "post",
-            handler: Function
+            handler: Function,
         },
         {
             name: "del",
             path: "/del",
             method: "post",
-            handler: Function
+            handler: Function,
         },
-    ]
+    ];
 
-    list: (query: FormFieldListQuery, callback?: Function) => Promise<FormFieldListResponse>
-    create: (request: FormFieldCreateRequest, callback?: Function) => Promise<FormFieldCreateResponse>
-    update: (request: FormFieldUpdateRequest, callback?: Function) => Promise<FormFieldUpdateResponse>
-    del: (request: FormFieldDeleteRequest, callback?: Function) => Promise<FormFieldDeleteResponse>
+    list: (query: FormFieldListQuery, callback?: Function) => Promise<FormFieldListResponse>;
+    create: (request: FormFieldCreateRequest, callback?: Function) => Promise<FormFieldCreateResponse>;
+    update: (request: FormFieldUpdateRequest, callback?: Function) => Promise<FormFieldUpdateResponse>;
+    del: (request: FormFieldDeleteRequest, callback?: Function) => Promise<FormFieldDeleteResponse>;
 
-    constructor(inject: Function, functions?: {
-        list: (query: FormFieldListQuery) => Promise<FormFieldListResponse>,
-        create: (request: FormFieldCreateRequest, callback?: Function) => Promise<FormFieldCreateResponse>
-        update: (request: FormFieldUpdateRequest, callback?: Function) => Promise<FormFieldUpdateResponse>
-        del: (request: FormFieldDeleteRequest) => Promise<FormFieldDeleteResponse>
-    }) { super(); inject(this, functions); }
+    constructor(
+        inject: Function,
+        functions?: {
+            list: (query: FormFieldListQuery) => Promise<FormFieldListResponse>;
+            create: (request: FormFieldCreateRequest, callback?: Function) => Promise<FormFieldCreateResponse>;
+            update: (request: FormFieldUpdateRequest, callback?: Function) => Promise<FormFieldUpdateResponse>;
+            del: (request: FormFieldDeleteRequest) => Promise<FormFieldDeleteResponse>;
+        },
+    ) {
+        super();
+        inject(this, functions);
+    }
 }
 
 export interface FormFieldListQuery extends BaseRequest {
@@ -61,7 +67,7 @@ export interface FormFieldCreateRequest extends BaseRequest {
     field_type: FieldType;
 }
 
-export interface FormFieldCreateResponse extends BaseResponse { }
+export interface FormFieldCreateResponse extends BaseResponse {}
 
 export interface FormFieldUpdateRequest extends BaseRequest {
     field_id: string;
@@ -71,7 +77,7 @@ export interface FormFieldUpdateRequest extends BaseRequest {
     placeholder?: string;
 }
 
-export interface FormFieldUpdateResponse extends BaseResponse { }
+export interface FormFieldUpdateResponse extends BaseResponse {}
 
 export interface FormFieldDeleteRequest extends BaseRequest {
     field_id: string;

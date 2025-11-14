@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Button, Input, Pagination, Select, SelectItem, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
+import { Input, Pagination, Select, SelectItem } from "@heroui/react";
 import { FormFieldImpl } from "../../../shared/impl";
 import { FormFieldListResponse } from "../../../shared/router/FieldRouter";
-import { FormFieldRouter, FormFieldRadioRouter, FormRouter } from "../../api/instance";
-import { FieldType } from "../../../shared/impl/field";
+import { FormFieldRouter, FormRouter } from "../../api/instance";
 import { FormListResponse } from "../../../shared/router/FormRouter";
 
 const Component = () => {
@@ -29,18 +28,19 @@ const Component = () => {
     useEffect(() => {
         FormRouter.list({ page: 1 }, ({ list }: FormListResponse) => {
             list.length && chooseForm(list[0]);
-        })
-    }, [])
+        });
+    }, []);
 
     const pagination = (
         <Pagination
-            initialPage={1} total={Math.ceil(total / 10)}
+            initialPage={1}
+            total={Math.ceil(total / 10)}
             onChange={(page: number) => {
                 setPage(page);
-                formName && FormFieldRouter.list({ form_name: formName, page }, renderFormField)
+                formName && FormFieldRouter.list({ form_name: formName, page }, renderFormField);
             }}
         />
-    )
+    );
 
     function renderControl(field: FormFieldImpl) {
         switch (field.field_type) {
@@ -54,7 +54,7 @@ const Component = () => {
                         placeholder={field.placeholder || " "}
                         className="w-full"
                     />
-                )
+                );
             }
             case "email": {
                 return (
@@ -66,15 +66,23 @@ const Component = () => {
                         placeholder={field.placeholder || "mail@example.com"}
                         className="w-full"
                     />
-                )
+                );
             }
-            case "password":
-            case "number":
-            case "month":
-            case "date":
-            case "time":
-            case "color":
-            case "file":
+            case "select": {
+                return (
+                    <Select
+                        label={field.field_name}
+                        variant="bordered"
+                        labelPlacement="outside"
+                        className="w-full"
+                        placeholder={field.placeholder || "请选择"}
+                    >
+                        {(field.radios || []).map((radio, index) => (
+                            <SelectItem key={index}>{radio.radio_name}</SelectItem>
+                        ))}
+                    </Select>
+                );
+            }
         }
     }
     return (
@@ -87,22 +95,18 @@ const Component = () => {
                             <div className="w-full flex flex-row flex-wrap pt-2" key={index}>
                                 {renderControl(field)}
                             </div>
-                        )
+                        );
                     })}
                 </div>
             </div>
             <div className="w-full flex flex-col flex-wrap px-[5vw] pt-6 pb-2">
                 <div className="flex flex-row justify-between items-center w-full py-2">
-                    <div className="flex flex-row w-full">
-                        {!!total && pagination}
-                    </div>
-                    <div className="flex flex-row">
-                    </div>
+                    <div className="flex flex-row w-full">{!!total && pagination}</div>
+                    <div className="flex flex-row"></div>
                 </div>
             </div>
-        </div >
-    )
+        </div>
+    );
 };
-
 
 export default Component;

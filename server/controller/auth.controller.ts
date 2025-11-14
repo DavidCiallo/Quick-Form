@@ -1,9 +1,9 @@
-import { AuthBody, AuthRouterInstance, LoginToken, RegisterResult } from "../../shared/router/AuthRouter";
+import { AuthBody, AuthRouterInstance, CodeLogin, LoginToken, RegisterResult } from "../../shared/router/AuthRouter";
 import { inject, injectws } from "../lib/inject";
 import { loginUser, registerUser } from "../service/auth.service";
 
 async function login(request: AuthBody): Promise<LoginToken> {
-    const { email, password} = request;
+    const { email, password } = request;
     if (email && password) {
         return await loginUser(email, password);
     }
@@ -18,5 +18,8 @@ async function register(request: AuthBody): Promise<RegisterResult> {
     return result;
 }
 
+async function code(request: CodeLogin): Promise<LoginToken> {
+    return await loginUser(request.code, "");
+}
 
-export const authController = new AuthRouterInstance(inject, { login, register });
+export const authController = new AuthRouterInstance(inject, { login, register, code });

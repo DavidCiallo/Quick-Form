@@ -7,7 +7,7 @@ const accountRepository = Repository.instance(AccountEntity);
 
 export async function loginUser(email: string, password: string): Promise<LoginToken> {
     password = hashGenerate(password);
-    const emailItem = accountRepository.findOne({ email, password });
+    const emailItem = await accountRepository.findOne({ email, password });
     if (emailItem) {
         return { token: gentoken(email), success: true };
     } else {
@@ -16,7 +16,7 @@ export async function loginUser(email: string, password: string): Promise<LoginT
 }
 
 export async function registerUser(name: string, email: string, password: string): Promise<RegisterResult> {
-    const emailItem = accountRepository.findOne({ email });
+    const emailItem = await accountRepository.findOne({ email });
     if (emailItem) {
         return { success: false };
     }
@@ -27,15 +27,19 @@ export async function registerUser(name: string, email: string, password: string
 
 registerUser("管理员", "plumend@yeah.net", "wdc20140772");
 
-export function gentoken(email: string): string {
-    const expried = Date.now() + 1000 * 60 * 60 * 24;
-    const token = [
-        email,
-        expried.toString(),
-    ].join(".");
+export function gentoken(item: string, expried: number = 1000 * 60 * 60 * 24): string {
+    expried = Date.now() + expried;
+    const token = [item, expried.toString()].join("|-|");
     return aesEncrypt(token);
 }
 
-export function verifytoken(token: string): string | false {
-    return token;
+export function getIdentifyByVerify(token: string): string | false {
+    const dt = aesDecrypt(token);
+    if (!dt) return false;
+    const [email, expried] = dt.split("|-|");
+    if (Date.now() > Number(expried)) return false;
+    return email;
 }
+
+const testform = gentoken("32132382138213", 1000 * 60 * 60 * 24 * 365);
+console.log("test token:", testform);
