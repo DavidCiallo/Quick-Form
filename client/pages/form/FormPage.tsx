@@ -1,17 +1,30 @@
 import { Header } from "../../components/header/Header";
 import { useEffect, useState } from "react";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
-import { FormFieldCreateResponse } from "../../../shared/router/FieldRouter";
-import { FormRouter } from "../../api/instance";
+import {
+    FormFieldCreateResponse,
+    FormFieldListResponse,
+    FormFieldUpdateResponse,
+} from "../../../shared/router/FieldRouter";
+import { FormFieldRouter, FormRouter, RecordRouter } from "../../api/instance";
 import FormEditor from "./FormEditor";
 import { toast } from "../../methods/notify";
 import { FormListResponse } from "../../../shared/router/FormRouter";
+import CreateRecordModal from "./CreateRecordEditor";
+import { FormFieldImpl } from "../../../shared/impl";
+import { RecordGetResponse } from "../../../shared/router/RecordRouter";
 
 const Component = () => {
+    const baseurl = location.host + "/fill?t=";
+
     const [formList, setFormList] = useState<string[]>([]);
+    const [fieldList, setFieldList] = useState<FormFieldImpl[]>([]);
+
     const [isFormEditorOpen, setFormEditorOpen] = useState(false);
     const [editMode, setEditMode] = useState<"create" | "edit">("create");
     const [focusForm, setFocusForm] = useState<string | null>(null);
+
+    const [isNewRecordOpen, setNewRecordOpen] = useState(false);
 
     function openFormEditor(formname?: string) {
         if (formname) {
@@ -22,6 +35,54 @@ const Component = () => {
         }
         setFormEditorOpen(true);
     }
+
+    function openRecordEditor(formname: string) {
+        setFocusForm(formname);
+        FormFieldRouter.list({ form_name: formname, page: 1 }, (data: FormFieldListResponse) => {
+            const { list } = data;
+            if (!list || list.length == 0) {
+                return toast({ title: "表单错误，可能不存在或者为空", color: "danger" });
+            } else {
+                setFieldList(list);
+                setNewRecordOpen(true);
+            }
+        });
+    }
+
+    async function saveForm(new_name: string) {
+        if (!new_name) {
+            return toast({ title: "无效名称", color: "danger" });
+        }
+        if (editMode == "create") {
+            FormRouter.create({ form_name: new_name }, ({ success }: FormFieldCreateResponse) => {
+                if (success) {
+                    setFormEditorOpen(false);
+                    setFormList([...formList, new_name]);
+                } else {
+                    toast({ title: "同名表单已存在", color: "danger" });
+                }
+            });
+        }
+        if (editMode == "edit") {
+            if (!focusForm) {
+                return toast({ title: "参数异常", color: "danger" });
+            }
+            if (focusForm === new_name) {
+                return toast({ title: "未修改", color: "danger" });
+            }
+            FormRouter.update({ form_name: focusForm, new_name }, ({ success }: FormFieldUpdateResponse) => {
+                if (success) {
+                    formList[formList.findIndex((n) => n === focusForm)] = new_name;
+                    setFormEditorOpen(false);
+                    setFormList([...formList]);
+                } else {
+                    toast({ title: "同名表单已存在", color: "danger" });
+                }
+            });
+        }
+    }
+
+    async function createInitRecord() {}
 
     useEffect(() => {
         FormRouter.list({ page: 1 }, (data: FormListResponse) => {
@@ -60,7 +121,9 @@ const Component = () => {
                                 <div className="text-sm text-primary" onClick={() => openFormEditor(form)}>
                                     重命名
                                 </div>
-                                <div className="text-sm text-danger">发起收集</div>
+                                <div className="text-sm text-danger" onClick={() => openRecordEditor(form)}>
+                                    生成链接
+                                </div>
                             </div>
                         );
                         return (
@@ -82,43 +145,35 @@ const Component = () => {
                     onOpenChange={(v: boolean) => {
                         setFormEditorOpen(v);
                     }}
-                    onSubmit={(data) => {
-                        if ("form_name" in data) {
-                            const form_name = data.form_name;
-                            if (!form_name) {
-                                return toast({ title: "无效名称", color: "danger" });
-                            }
-                            if (editMode == "create") {
-                                FormRouter.create({ form_name }, ({ success }: FormFieldCreateResponse) => {
-                                    if (success) {
-                                        setFormEditorOpen(false);
-                                        setFormList([...formList, form_name]);
-                                    } else {
-                                        toast({ title: "同名表单已存在", color: "danger" });
-                                    }
-                                });
-                            }
-                            if (editMode == "edit") {
-                                if (!focusForm) {
-                                    return toast({ title: "参数异常", color: "danger" });
-                                }
-                                if (focusForm === form_name) {
-                                    return toast({ title: "未修改", color: "danger" });
-                                }
-                                FormRouter.update(
-                                    { origin_name: focusForm, new_name: form_name },
-                                    ({ success }: FormFieldCreateResponse) => {
-                                        if (success) {
-                                            formList[formList.findIndex((n) => n === focusForm)] = form_name;
-                                            setFormEditorOpen(false);
-                                            setFormList([...formList]);
-                                        } else {
-                                            toast({ title: "同名表单已存在", color: "danger" });
-                                        }
-                                    },
-                                );
-                            }
+                    onSubmit={({ form_name }) => saveForm(form_name)}
+                />
+            }
+            {
+                <CreateRecordModal
+                    isOpen={isNewRecordOpen}
+                    fields={fieldList}
+                    onOpenChange={(v: boolean) => {
+                        setNewRecordOpen(v);
+                    }}
+                    onCreate={(data) => {
+                        if (!data) {
+                            const url = baseurl + fieldList[0].id;
+                            navigator.clipboard.writeText(url);
+                            toast({ title: "复制成功", color: "success" });
+                            return;
                         }
+                        const { field_index, field_value } = data;
+                        const field_id = fieldList[field_index]?.id;
+                        if (!field_id || !field_value) {
+                            toast({ title: "参数错误", color: "danger" });
+                            return;
+                        }
+                        RecordRouter.get({ id: field_id }, async ({ item_id, code }: RecordGetResponse) => {
+                            RecordRouter.submit({ field_id, field_value, item_id });
+                            const url = `${baseurl + item_id}#code:${code}`;
+                            navigator.clipboard.writeText(url);
+                            toast({ title: "复制成功，请注意信息安全", color: "success" });
+                        });
                     }}
                 />
             }

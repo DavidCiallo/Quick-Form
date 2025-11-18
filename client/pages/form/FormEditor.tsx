@@ -5,11 +5,11 @@ import { toast } from "../../methods/notify";
 
 interface props {
     isOpen: boolean;
-    onOpenChange: any;
+    onOpenChange: (v: boolean) => void;
     onSubmit: (data: FormCreateRequest | FormUpdateRequest) => void;
 }
 
-const FieldEditorModal = ({ isOpen, onOpenChange, onSubmit }: props) => {
+const FormEditorModal = ({ isOpen, onOpenChange, onSubmit }: props) => {
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleCustomSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
@@ -70,4 +70,4 @@ const FieldEditorModal = ({ isOpen, onOpenChange, onSubmit }: props) => {
     );
 };
 
-export default FieldEditorModal;
+export default FormEditorModal;
