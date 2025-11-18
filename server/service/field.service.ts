@@ -63,11 +63,11 @@ export async function updateSingleField(id: string, key: string, value: string):
     return result;
 }
 
-export async function updateFormName(origin_name: string, new_name: string): Promise<boolean> {
-    const exist = await FieldRepository.findOne({ form_name: origin_name });
+export async function updateFormName(form_name: string, new_name: string): Promise<boolean> {
+    const exist = await FieldRepository.findOne({ form_name: form_name });
     if (!exist) {
         return false;
     }
-    const result = await FieldRepository.update({ form_name: origin_name }, { form_name: new_name });
+    const result = await FieldRepository.update({ form_name: form_name }, { form_name: new_name });
     return result;
 }

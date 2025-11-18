@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-
 import AuthPage from "./pages/auth/AuthPage";
 import { toast } from "./methods/notify";
 import FormPage from "./pages/form/FormPage";
-import FormFieldPage from "./pages/form/FormFieldPage";
+import FormFieldPage from "./pages/field/FormFieldPage";
 import FillPage from "./pages/fill/FillPage";
 import HomePage from "./pages/home/HomePage";
 
@@ -19,12 +19,12 @@ const App = () => {
     return (
         <Router>
             <Routes>
+                <Route path="/home" element={<HomePage />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/fill" element={<FillPage />} />
                 <Route element={<PrivateRoute />}>
                     <Route path="/form" element={<FormPage />} />
                     <Route path="/field" element={<FormFieldPage />} />
-                    <Route path="/home" element={<HomePage />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>

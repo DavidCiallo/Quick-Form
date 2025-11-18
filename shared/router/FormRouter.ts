@@ -65,7 +65,7 @@ export interface FormCreateRequest extends BaseRequest {
 export interface FormCreateResponse extends BaseResponse {}
 
 export interface FormUpdateRequest extends BaseRequest {
-    origin_name: string;
+    form_name: string;
     new_name: string;
 }
 

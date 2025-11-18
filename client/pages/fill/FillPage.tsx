@@ -9,15 +9,13 @@ import { useNavigate } from "react-router-dom";
 
 const Component = () => {
     const navigate = useNavigate();
-    const reqpath = new URLSearchParams(window.location.search);
-    let id = reqpath.get("t");
 
     const [formName, setFormName] = useState<string>("");
     const [fieldList, setFieldList] = useState<FormFieldImpl[]>([]);
     const [records, setRecords] = useState<RecordImpl[]>([]);
 
-    const [pass, setPass] = useState(true);
-    const [code, setCode] = useState(localStorage.getItem("code") || "");
+    const [pass, setPass] = useState<boolean>(true);
+    const [code, setCode] = useState<string>("");
 
     function changeCode(code: string) {
         if (code.length > 4) return;
@@ -39,7 +37,8 @@ const Component = () => {
     }
 
     async function loadRecord(code: string) {
-        if (!id) return toast({ title: "非法参数", color: "danger" });
+        let id = localStorage.getItem("entry_id");
+        if (!id) return;
         await RecordRouter.get(
             { id, code },
             async ({ form_name, fields, records, item_id, code, check }: RecordGetResponse) => {
@@ -60,10 +59,16 @@ const Component = () => {
         const item_id = localStorage.getItem("item_id");
         if (!item_id) return toast({ title: "错误提交", color: "danger" });
         await RecordRouter.submit({ item_id, field_id, field_value });
-        navigate("/fill?t=" + item_id);
+        // navigate("/fill?t=" + item_id);
     }
 
     useEffect(() => {
+        const id = new URLSearchParams(window.location?.search)?.get("t");
+        if (!id) {
+            return toast({ title: "非法参数", color: "danger" });
+        }
+        localStorage.setItem("entry_id", id);
+        const code = localStorage.getItem("code") || "";
         loadRecord(code);
     }, []);
 

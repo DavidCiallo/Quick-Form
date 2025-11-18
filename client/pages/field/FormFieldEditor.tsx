@@ -1,23 +1,29 @@
 import { useRef } from "react";
-import { Button, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@heroui/react";
+import {
+    Button,
+    Form,
+    Input,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    Select,
+    SelectItem,
+} from "@heroui/react";
 import { FormFieldCreateRequest, FormFieldUpdateRequest } from "../../../shared/router/FieldRouter";
 import { toast } from "../../methods/notify";
 import { FieldType } from "../../../shared/impl/field";
-import { FieldTypeList } from "./types";
+import { FieldTypeList } from "../form/types";
 
 interface props {
     form_name: string;
-    isOpen: boolean,
-    onOpenChange: any,
-    onSubmit: (data: FormFieldCreateRequest | FormFieldUpdateRequest) => void
+    isOpen: boolean;
+    onOpenChange: any;
+    onSubmit: (data: FormFieldCreateRequest | FormFieldUpdateRequest) => void;
 }
 
-const FieldEditorModal = ({
-    form_name,
-    isOpen,
-    onOpenChange,
-    onSubmit
-}: props) => {
+const FieldEditorModal = ({ form_name, isOpen, onOpenChange, onSubmit }: props) => {
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleCustomSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
@@ -27,19 +33,18 @@ const FieldEditorModal = ({
         }
         const { form_name, field_name, field_type } = Object.fromEntries(new FormData(formRef.current!).entries());
         if (!form_name || !field_name || !field_type) {
-            return toast({ title: "格式错误", color: "danger" })
+            return toast({ title: "格式错误", color: "danger" });
         }
         onSubmit({
             form_name: form_name.toString(),
             field_name: field_name.toString(),
-            field_type: field_type.toString() as FieldType
-        })
+            field_type: field_type.toString() as FieldType,
+        });
     };
 
     const triggerSubmit = () => {
         handleCustomSubmit();
     };
-
 
     const ModalBodyContent = () => {
         return (
@@ -72,16 +77,14 @@ const FieldEditorModal = ({
                         variant="bordered"
                         className="mb-4"
                     >
-                        {
-                            FieldTypeList.map(({ name, type }) => (
-                                <SelectItem key={type}>{name}</SelectItem>
-                            ))
-                        }
+                        {FieldTypeList.map(({ name, type }) => (
+                            <SelectItem key={type}>{name}</SelectItem>
+                        ))}
                     </Select>
                 </Form>
             </div>
-        )
-    }
+        );
+    };
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="w-full">
             <ModalContent className="md:min-w-[800px] max-h-[80vh]">
@@ -103,8 +106,7 @@ const FieldEditorModal = ({
                 )}
             </ModalContent>
         </Modal>
-    )
+    );
 };
-
 
 export default FieldEditorModal;

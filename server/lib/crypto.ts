@@ -1,10 +1,10 @@
 import crypto from "crypto";
 
-const secret = process.env.SECRET;
-const noncelen = Number(process.env.NONCE_LENGTH);
+const secret = process.env.SECRET || Date.now().toString(36);
+const noncelen = Number(process.env.NONCE_LENGTH) || 4;
 
-if (!secret || isNaN(noncelen)) {
-    throw new Error("Missing or invalid SECRET or NONCE_LENGTH in environment variables");
+if (secret.length < 16 || noncelen < 6) {
+    console.warn("Missing SECRET or NONCE_LENGTH in environment variables or too weak");
 }
 
 const secretKey = crypto.createHash("sha256").update(secret).digest();
