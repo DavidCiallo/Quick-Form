@@ -4,8 +4,13 @@ import Repository from "../lib/repository";
 
 const RecordRepository = Repository.instance(RecordEntity);
 
-export async function getRecords(item_id: string): Promise<Array<RecordImpl>> {
-    const recordsData = await RecordRepository.find({ item_id });
+export async function getRecords(item_id?: string): Promise<Array<RecordImpl>> {
+    const recordsData = [];
+    if (item_id) {
+        recordsData.push(...(await RecordRepository.find({ item_id })));
+    } else {
+        recordsData.push(...(await RecordRepository.find({})));
+    }
     const records = recordsData.map((record) => {
         return new RecordImpl(record);
     });

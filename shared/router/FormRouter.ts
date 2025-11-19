@@ -53,8 +53,12 @@ export interface FormListQuery extends BaseRequest {
     page: number;
 }
 
-export interface FormListResponse {
-    list: string[];
+export interface FormListResponse extends BaseResponse {
+    list: Array<{
+        form_name: string;
+        records_num: number;
+        last_submit: number;
+    }>;
     total: number;
 }
 

@@ -17,7 +17,13 @@ import { RecordGetResponse } from "../../../shared/router/RecordRouter";
 const Component = () => {
     const baseurl = location.host + "/fill?t=";
 
-    const [formList, setFormList] = useState<string[]>([]);
+    const [formList, setFormList] = useState<
+        Array<{
+            form_name: string;
+            records_num: number;
+            last_submit: number;
+        }>
+    >([]);
     const [fieldList, setFieldList] = useState<FormFieldImpl[]>([]);
 
     const [isFormEditorOpen, setFormEditorOpen] = useState(false);
@@ -57,7 +63,7 @@ const Component = () => {
             FormRouter.create({ form_name: new_name }, ({ success }: FormFieldCreateResponse) => {
                 if (success) {
                     setFormEditorOpen(false);
-                    setFormList([...formList, new_name]);
+                    setFormList([...formList, { form_name: new_name, records_num: 0, last_submit: 0 }]);
                 } else {
                     toast({ title: "同名表单已存在", color: "danger" });
                 }
@@ -72,7 +78,7 @@ const Component = () => {
             }
             FormRouter.update({ form_name: focusForm, new_name }, ({ success }: FormFieldUpdateResponse) => {
                 if (success) {
-                    formList[formList.findIndex((n) => n === focusForm)] = new_name;
+                    formList[formList.findIndex((n) => n.form_name === focusForm)].form_name = new_name;
                     setFormEditorOpen(false);
                     setFormList([...formList]);
                 } else {
@@ -82,7 +88,26 @@ const Component = () => {
         }
     }
 
-    async function createInitRecord() {}
+    async function createRecordLink(data?: { field_index: number; field_value: string }) {
+        if (!data) {
+            const url = baseurl + fieldList[0].id;
+            navigator.clipboard.writeText(url);
+            toast({ title: "复制成功", color: "success" });
+            return;
+        }
+        const { field_index, field_value } = data;
+        const field_id = fieldList[field_index]?.id;
+        if (!field_id || !field_value) {
+            toast({ title: "参数错误", color: "danger" });
+            return;
+        }
+        RecordRouter.get({ id: field_id }, async ({ item_id, code }: RecordGetResponse) => {
+            RecordRouter.submit({ field_id, field_value, item_id });
+            const url = `${baseurl + item_id}#code:${code}`;
+            navigator.clipboard.writeText(url);
+            toast({ title: "复制成功，请注意信息安全", color: "success" });
+        });
+    }
 
     useEffect(() => {
         FormRouter.list({ page: 1 }, (data: FormListResponse) => {
@@ -107,29 +132,30 @@ const Component = () => {
                     </div>
                 </div>
                 <Accordion selectedKeys={[]}>
-                    {formList.map((form) => {
-                        const title = <div className="text-lg font-bold">{form}</div>;
+                    {formList.map(({ form_name, records_num, last_submit }) => {
+                        const title = <div className="text-lg font-bold">{form_name}</div>;
                         const subtitle = (
                             <div className="flex flex-row gap-3">
-                                <div>共0条记录 </div>
-                                <div>上次提交 12分钟前</div>
+                                <div>共{records_num}条记录 </div>
+                                {!!last_submit && <div>{new Date(last_submit).toLocaleString()}</div>}
+                                {!last_submit && <div>暂无记录</div>}
                             </div>
                         );
                         const indicator = (
                             <div className="flex flex-row gap-3">
                                 <div className="text-sm text-primary">查看</div>
-                                <div className="text-sm text-primary" onClick={() => openFormEditor(form)}>
+                                <div className="text-sm text-primary" onClick={() => openFormEditor(form_name)}>
                                     重命名
                                 </div>
-                                <div className="text-sm text-danger" onClick={() => openRecordEditor(form)}>
+                                <div className="text-sm text-danger" onClick={() => openRecordEditor(form_name)}>
                                     生成链接
                                 </div>
                             </div>
                         );
                         return (
                             <AccordionItem
-                                key={form}
-                                aria-label={form}
+                                key={form_name}
+                                aria-label={form_name}
                                 title={title}
                                 subtitle={subtitle}
                                 indicator={indicator}
@@ -155,26 +181,7 @@ const Component = () => {
                     onOpenChange={(v: boolean) => {
                         setNewRecordOpen(v);
                     }}
-                    onCreate={(data) => {
-                        if (!data) {
-                            const url = baseurl + fieldList[0].id;
-                            navigator.clipboard.writeText(url);
-                            toast({ title: "复制成功", color: "success" });
-                            return;
-                        }
-                        const { field_index, field_value } = data;
-                        const field_id = fieldList[field_index]?.id;
-                        if (!field_id || !field_value) {
-                            toast({ title: "参数错误", color: "danger" });
-                            return;
-                        }
-                        RecordRouter.get({ id: field_id }, async ({ item_id, code }: RecordGetResponse) => {
-                            RecordRouter.submit({ field_id, field_value, item_id });
-                            const url = `${baseurl + item_id}#code:${code}`;
-                            navigator.clipboard.writeText(url);
-                            toast({ title: "复制成功，请注意信息安全", color: "success" });
-                        });
-                    }}
+                    onCreate={createRecordLink}
                 />
             }
         </div>

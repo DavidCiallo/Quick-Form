@@ -10,12 +10,26 @@ import {
     FormRouterInstance,
 } from "../../shared/router/FormRouter";
 import { inject, injectws } from "../lib/inject";
-import { createField, getFormList, updateFormName } from "../service/field.service";
+import { createField, getFieldList, getFormList, updateFormName } from "../service/field.service";
+import { getRecords } from "../service/record.service";
 
 async function list(query: FormListQuery): Promise<FormListResponse> {
-    if (!query.page) return { list: [], total: 0 };
-    const list = await getFormList();
-    return { list, total: list.length };
+    if (!query.page) return { list: [], total: 0, success: false };
+    const allRecords = (await getRecords()).sort((a, b) => {
+        const tA = new Date(a.update_time || a.create_time || 0);
+        const tB = new Date(b.update_time || b.create_time || 0);
+        return tB.getTime() - tA.getTime();
+    });
+    const list = await Promise.all(
+        (await getFormList()).map(async (form_name) => {
+            const fields = await getFieldList(form_name);
+            const records = allRecords.filter((r) => fields.find((f) => f.id == r.field_id));
+            const records_num = new Set(records.map((i) => i.item_id)).size;
+            const last_submit = records[0]?.update_time || records[0]?.create_time || 0;
+            return { form_name, records_num, last_submit };
+        }),
+    );
+    return { list, total: list.length, success: true };
 }
 
 async function create(query: FormCreateRequest): Promise<FormCreateResponse> {

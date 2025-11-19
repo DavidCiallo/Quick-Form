@@ -38,15 +38,21 @@ export class FormFieldRadioImpl implements Pick<FormFieldRadioEntity, "id" | "fi
     }
 }
 
-export class RecordImpl implements Pick<RecordEntity, "id" | "item_id" | "field_id" | "field_value"> {
+export class RecordImpl
+    implements Pick<RecordEntity, "id" | "item_id" | "field_id" | "field_value" | "create_time" | "update_time">
+{
     id: string;
     item_id: string;
     field_id: string;
     field_value: string;
+    create_time: number;
+    update_time: number | null;
     constructor(record: RecordEntity) {
         this.id = record.id;
         this.item_id = record.item_id;
         this.field_id = record.field_id;
         this.field_value = record.field_value;
+        this.create_time = record.create_time;
+        this.update_time = record.update_time;
     }
 }
