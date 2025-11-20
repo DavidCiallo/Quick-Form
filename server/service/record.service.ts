@@ -33,6 +33,13 @@ export async function submitRecord(record: Omit<RecordImpl, "id" | "create_time"
 export async function getAllRecord(form_name: string) {
     const fields = await FieldRepository.find({ form_name });
     const recordData = await Promise.all(fields.map(({ id: field_id }) => RecordRepository.find({ field_id })));
-    const records = recordData.flat().map((r) => new RecordImpl(r));
+    const records = recordData
+        .flat()
+        .sort((a, b) => {
+            const tA = new Date(a.update_time || a.create_time || 0).getTime();
+            const tB = new Date(b.update_time || b.create_time || 0).getTime();
+            return tB - tA;
+        })
+        .map((r) => new RecordImpl(r));
     return records;
 }

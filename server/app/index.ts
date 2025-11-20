@@ -40,4 +40,6 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server, path: "/ws" });
 mountws(wss, []);
 
-server.listen(process.env.SERVER_PORT || 3300);
+server.listen(process.env.SERVER_PORT || 3300, () => {
+    console.log(`Server is running at http://localhost:${process.env.SERVER_PORT || 3300}`);
+});

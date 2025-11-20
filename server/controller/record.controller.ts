@@ -1,5 +1,7 @@
 import { nanoid } from "nanoid";
 import {
+    RecordAllQuery,
+    RecordAllResponse,
     RecordGetQuery,
     RecordGetResponse,
     RecordRouterInstance,
@@ -8,10 +10,11 @@ import {
 } from "../../shared/router/RecordRouter";
 import { inject, injectws } from "../lib/inject";
 import { getFieldList, getFormNameByField } from "../service/field.service";
-import { getRecords, submitRecord } from "../service/record.service";
+import { getAllRecord, getRecords, submitRecord } from "../service/record.service";
 import { codeGenerate } from "../lib/crypto";
+import { RecordImpl } from "../../shared/impl";
 
-async function get(request: RecordGetQuery): Promise<RecordGetResponse> {
+async function history(request: RecordGetQuery): Promise<RecordGetResponse> {
     const { id, code } = request;
     const records = await getRecords(id);
     if (records.length) {
@@ -66,4 +69,27 @@ async function submit(request: RecordUpdateRequest): Promise<RecordUpdateRespons
     return { success };
 }
 
-export const recordController = new RecordRouterInstance(inject, { get, submit });
+async function all(request: RecordAllQuery): Promise<RecordAllResponse> {
+    const { form_name, page } = request;
+    if (!form_name || !page || page < 1) {
+        return { data: [], total: 0, success: false };
+    }
+    const records = await getAllRecord(form_name);
+    const group: Array<{
+        item_id: string;
+        records: Array<RecordImpl>;
+    }> = [];
+    for (const r of records) {
+        const exist = group.findIndex(({ item_id }) => r.item_id == item_id);
+        if (exist !== -1) {
+            group[exist].records.push(r);
+        } else {
+            group.push({ item_id: r.item_id, records: [r] });
+        }
+    }
+    const data = group.slice((page - 1) * 10, page * 10);
+
+    return { data, total: group.length, success: true };
+}
+
+export const recordController = new RecordRouterInstance(inject, { history, submit, all });
