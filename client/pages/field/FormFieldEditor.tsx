@@ -15,6 +15,7 @@ import { FormFieldCreateRequest, FormFieldUpdateRequest } from "../../../shared/
 import { toast } from "../../methods/notify";
 import { FieldType } from "../../../shared/impl/field";
 import { FieldTypeList } from "../form/types";
+import { Locale } from "../../methods/locale";
 
 interface props {
     form_name: string;
@@ -24,16 +25,16 @@ interface props {
 }
 
 const FieldEditorModal = ({ form_name, isOpen, onOpenChange, onSubmit }: props) => {
+    const locale = Locale("FormFieldEditor");
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleCustomSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
         if (event) {
             event.preventDefault();
-            return;
         }
         const { form_name, field_name, field_type } = Object.fromEntries(new FormData(formRef.current!).entries());
         if (!form_name || !field_name || !field_type) {
-            return toast({ title: "格式错误", color: "danger" });
+            return toast({ title: Locale("Common").ToastParamError, color: "danger" });
         }
         onSubmit({
             form_name: form_name.toString(),
@@ -52,28 +53,28 @@ const FieldEditorModal = ({ form_name, isOpen, onOpenChange, onSubmit }: props) 
                 <Form ref={formRef} onSubmit={handleCustomSubmit}>
                     <Input
                         isRequired
-                        label="表单名"
+                        label={locale.FormNameLabel}
                         name="form_name"
                         labelPlacement="outside"
                         isReadOnly
                         value={form_name}
-                        placeholder="请选择表单"
+                        placeholder={locale.FormNamePlaceholder}
                         variant="bordered"
                         className="mb-4"
                     />
                     <Input
-                        label="字段名"
+                        label={locale.FieldNameLabel}
                         name="field_name"
                         labelPlacement="outside"
-                        placeholder="请输入字段名"
+                        placeholder={locale.FieldNamePlaceholder}
                         variant="bordered"
                         className="mb-4"
                     />
                     <Select
-                        label="字段类型"
+                        label={locale.FieldTypeLabel}
                         name="field_type"
                         labelPlacement="outside"
-                        placeholder="请选择字段类型"
+                        placeholder={locale.FieldTypePlaceholder}
                         variant="bordered"
                         className="mb-4"
                     >
@@ -90,16 +91,16 @@ const FieldEditorModal = ({ form_name, isOpen, onOpenChange, onSubmit }: props) 
             <ModalContent className="md:min-w-[800px] max-h-[80vh]">
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex flex-col">新增字段</ModalHeader>
+                        <ModalHeader className="flex flex-col">{locale.Title}</ModalHeader>
                         <ModalBody className="overflow-y-auto">
                             <ModalBodyContent />
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" size="sm" variant="light" onPress={triggerSubmit}>
-                                保存
+                                {Locale("Common").ButtonSave}
                             </Button>
                             <Button color="danger" size="sm" variant="light" onPress={onClose}>
-                                关闭
+                                {Locale("Common").ButtonClose}
                             </Button>
                         </ModalFooter>
                     </>

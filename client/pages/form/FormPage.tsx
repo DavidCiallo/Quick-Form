@@ -14,8 +14,11 @@ import CreateRecordModal from "./CreateRecordEditor";
 import { FormFieldImpl } from "../../../shared/impl";
 import { RecordGetResponse } from "../../../shared/router/RecordRouter";
 import { useNavigate } from "react-router-dom";
+import { Locale } from "../../methods/locale";
 
 const Component = () => {
+    const locale = Locale("FormPage");
+
     const baseurl = location.host + "/fill?t=";
 
     const navigate = useNavigate();
@@ -58,7 +61,10 @@ const Component = () => {
             }
             const list = data.list;
             if (!list || list.length == 0) {
-                return toast({ title: "表单错误，可能不存在或者为空", color: "danger" });
+                return toast({
+                    title: locale.ToastFormListEmpty,
+                    color: "danger",
+                });
             } else {
                 setFieldList(list);
                 setNewRecordOpen(true);
@@ -68,7 +74,10 @@ const Component = () => {
 
     async function saveForm(new_name: string) {
         if (!new_name) {
-            return toast({ title: "无效名称", color: "danger" });
+            return toast({
+                title: Locale("Common").ToastParamError,
+                color: "danger",
+            });
         }
         if (editMode == "create") {
             FormRouter.create({ form_name: new_name }, ({ success }: FormFieldCreateResponse) => {
@@ -76,16 +85,25 @@ const Component = () => {
                     setFormEditorOpen(false);
                     setFormList([...formList, { form_name: new_name, records_num: 0, last_submit: 0 }]);
                 } else {
-                    toast({ title: "同名表单已存在", color: "danger" });
+                    toast({
+                        title: locale.ToastCreateFormFailed,
+                        color: "danger",
+                    });
                 }
             });
         }
         if (editMode == "edit") {
             if (!focusForm) {
-                return toast({ title: "参数异常", color: "danger" });
+                return toast({
+                    title: Locale("Common").ToastParamError,
+                    color: "danger",
+                });
             }
             if (focusForm === new_name) {
-                return toast({ title: "未修改", color: "danger" });
+                return toast({
+                    title: Locale("Common").ToastParamError,
+                    color: "danger",
+                });
             }
             FormRouter.update({ form_name: focusForm, new_name }, ({ success }: FormFieldUpdateResponse) => {
                 if (success) {
@@ -93,7 +111,10 @@ const Component = () => {
                     setFormEditorOpen(false);
                     setFormList([...formList]);
                 } else {
-                    toast({ title: "同名表单已存在", color: "danger" });
+                    toast({
+                        title: locale.ToastEditFormFailed,
+                        color: "danger",
+                    });
                 }
             });
         }
@@ -103,14 +124,19 @@ const Component = () => {
         if (!data) {
             const url = baseurl + fieldList[0].id;
             navigator.clipboard.writeText(url);
-            toast({ title: "复制成功", color: "success" });
+            toast({
+                title: locale.ToastCopySuccess,
+                color: "success",
+            });
             return;
         }
         const { field_index, field_value } = data;
         const field_id = fieldList[field_index]?.id;
         if (!field_id || !field_value) {
-            toast({ title: "参数错误", color: "danger" });
-            return;
+            return toast({
+                title: Locale("Common").ToastParamError,
+                color: "danger",
+            });
         }
         RecordRouter.history({ id: field_id }, async ({ success, data, message }: RecordGetResponse) => {
             if (!success || !data) {
@@ -120,7 +146,10 @@ const Component = () => {
             RecordRouter.submit({ field_id, field_value, item_id });
             const url = `${baseurl + item_id}#code:${code}`;
             navigator.clipboard.writeText(url);
-            toast({ title: "复制成功，请注意信息安全", color: "success" });
+            toast({
+                title: locale.ToastCopySuccess,
+                color: "success",
+            });
         });
     }
 
@@ -139,7 +168,7 @@ const Component = () => {
 
     return (
         <div className="max-w-screen">
-            <Header name="表单列表" />
+            <Header name={locale.Title} />
             <div className="w-full flex flex-col flex-wrap px-[5vw] pt-6 pb-2">
                 <div className="flex flex-row justify-end items-center w-full py-2">
                     <div className="flex flex-row">
@@ -149,7 +178,7 @@ const Component = () => {
                             variant="bordered"
                             className="text-black-500"
                         >
-                            新建表单
+                            {locale.CreateNewForm}
                         </Button>
                     </div>
                 </div>
@@ -158,21 +187,21 @@ const Component = () => {
                         const title = <div className="text-lg font-bold">{form_name}</div>;
                         const subtitle = (
                             <div className="flex flex-row gap-3">
-                                <div>共{records_num}条记录 </div>
-                                {last_submit && <div>{new Date(last_submit).toLocaleString()}</div>}
-                                {!last_submit && <div>暂无记录</div>}
+                                <div>{locale.RecordNumLabel + " " + records_num}</div>
+                                {!!last_submit && <div>{new Date(last_submit).toLocaleString().slice(5, 16)}</div>}
+                                {!last_submit && <div>{locale.EmptyNumLabel}</div>}
                             </div>
                         );
                         const indicator = (
                             <div className="flex flex-row gap-3">
                                 <div className="text-sm text-primary" onClick={() => viewRecords(form_name)}>
-                                    查看
+                                    {locale.ViewRecordsButton}
                                 </div>
                                 <div className="text-sm text-primary" onClick={() => openFormEditor(form_name)}>
-                                    重命名
+                                    {locale.RenameButton}
                                 </div>
                                 <div className="text-sm text-danger" onClick={() => openRecordEditor(form_name)}>
-                                    生成链接
+                                    {locale.CreateRecordButton}
                                 </div>
                             </div>
                         );

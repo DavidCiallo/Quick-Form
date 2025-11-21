@@ -1,8 +1,9 @@
 import { Button, Modal, ModalBody, ModalContent, Input, Select, SelectItem } from "@heroui/react";
-import SubmitImg from "../../images/png/Submit.png";
+import CommonImg from "../../images/png/Common.png";
 import CollectImg from "../../images/png/Collect.png";
-import { useRef, useState } from "react"; // 导入 useState
+import { useRef, useState } from "react";
 import { FormFieldImpl } from "../../../shared/impl";
+import { Locale } from "../../methods/locale";
 
 interface Prop {
     isOpen: boolean;
@@ -11,9 +12,10 @@ interface Prop {
     onCreate: (data?: { field_index: number; field_value: string }) => void;
 }
 
-type SelectionType = "submit" | "collect" | null;
+type SelectionType = "common" | "collect" | null;
 
 const CreateRecordEditor = ({ isOpen, fields, onOpenChange, onCreate }: Prop) => {
+    const locale = Locale("CreateRecordEditor");
     const [selectedType, setSelectedType] = useState<SelectionType>(null);
 
     const fieldSelect = useRef<HTMLSelectElement>(null);
@@ -25,14 +27,14 @@ const CreateRecordEditor = ({ isOpen, fields, onOpenChange, onCreate }: Prop) =>
         onOpenChange(v);
     }
 
-    const SubmitMode = (
+    const CommonMode = (
         <div className="w-full flex flex-col gap-6">
             <div className="w-full flex flex-row gap-4 items-center">
-                <Input size="md" readOnly isDisabled value="无需更多操作" />
+                <Input size="md" readOnly isDisabled value={locale.CommonPlaceholder} />
             </div>
             <div>
                 <Button color="primary" className="w-full" onClick={() => onCreate()}>
-                    复制链接
+                    {locale.CopyLinkButton}
                 </Button>
             </div>
         </div>
@@ -40,7 +42,7 @@ const CreateRecordEditor = ({ isOpen, fields, onOpenChange, onCreate }: Prop) =>
     const CollectMode = (
         <div className="w-full flex flex-col gap-6">
             <div className="w-full flex flex-row gap-4 items-center">
-                <Select ref={fieldSelect} aria-label="select" size="md" placeholder="选择字段">
+                <Select ref={fieldSelect} aria-label="select" size="md" placeholder={locale.FieldPlaceholder}>
                     {fields.map((field) => {
                         return (
                             <SelectItem key={field.id} isDisabled={!!field.radios?.length}>
@@ -49,7 +51,7 @@ const CreateRecordEditor = ({ isOpen, fields, onOpenChange, onCreate }: Prop) =>
                         );
                     })}
                 </Select>
-                <Input ref={valueSelect} size="md" placeholder="预设值" />
+                <Input ref={valueSelect} size="md" placeholder={locale.ValuePlaceholder} />
             </div>
             <div>
                 <Button
@@ -62,7 +64,7 @@ const CreateRecordEditor = ({ isOpen, fields, onOpenChange, onCreate }: Prop) =>
                         })
                     }
                 >
-                    创建并复制链接
+                    {locale.CreateCopyLinkButton}
                 </Button>
             </div>
         </div>
@@ -72,24 +74,24 @@ const CreateRecordEditor = ({ isOpen, fields, onOpenChange, onCreate }: Prop) =>
             <ModalContent>
                 <ModalBody className="flex flex-col items-center p-6">
                     <div className="mb-4 text-center font-bold text-xl">
-                        {selectedType === null ? "请选择表单类型" : ""}
-                        {selectedType === "submit" ? "普通表单" : ""}
-                        {selectedType === "collect" ? "记名表单" : ""}
+                        {selectedType === null ? locale.NullSelectedType : ""}
+                        {selectedType === "common" ? locale.CommonType : ""}
+                        {selectedType === "collect" ? locale.CollectType : ""}
                     </div>
                     <div className="flex flex-row gap-5 mb-6">
                         <img
-                            src={SubmitImg}
-                            alt="从空白创建"
+                            src={CommonImg}
+                            alt="common"
                             className={`w-32 h-32 object-cover cursor-pointer rounded-lg border-4 transition-all ${
-                                selectedType === "submit"
+                                selectedType === "common"
                                     ? "border-primary-500 scale-105"
                                     : "border-transparent hover:border-gray-300"
                             }`}
-                            onClick={() => setSelectedType("submit")}
+                            onClick={() => setSelectedType("common")}
                         />
                         <img
                             src={CollectImg}
-                            alt="从模板创建"
+                            alt="collect"
                             className={`w-32 h-32 object-cover cursor-pointer rounded-lg border-4 transition-all ${
                                 selectedType === "collect"
                                     ? "border-primary-500 scale-105"
@@ -100,7 +102,7 @@ const CreateRecordEditor = ({ isOpen, fields, onOpenChange, onCreate }: Prop) =>
                     </div>
 
                     <div className="w-full h-24 max-w-xs flex flex-row">
-                        {selectedType === "submit" && SubmitMode}
+                        {selectedType === "common" && CommonMode}
                         {selectedType === "collect" && CollectMode}
                     </div>
                     <div className="px-10 w-full"></div>

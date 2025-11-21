@@ -2,20 +2,17 @@ import { useRef } from "react";
 import { Button, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { FormFieldRadioCreateRequest, FormFieldRadioUpdateRequest } from "../../../shared/router/RadioRouter";
 import { toast } from "../../methods/notify";
+import { Locale } from "../../methods/locale";
 
 interface props {
     field_id: string;
-    isOpen: boolean,
-    onOpenChange: any,
-    onSubmit: (data: FormFieldRadioCreateRequest | FormFieldRadioUpdateRequest) => void
+    isOpen: boolean;
+    onOpenChange: any;
+    onSubmit: (data: FormFieldRadioCreateRequest | FormFieldRadioUpdateRequest) => void;
 }
 
-const RadioEditorModal = ({
-    field_id,
-    isOpen,
-    onOpenChange,
-    onSubmit
-}: props) => {
+const RadioEditorModal = ({ field_id, isOpen, onOpenChange, onSubmit }: props) => {
+    const locale = Locale("FormFieldRadioEditor");
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleCustomSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
@@ -25,10 +22,13 @@ const RadioEditorModal = ({
         }
         const { radio_name } = Object.fromEntries(new FormData(formRef.current!).entries());
         if (!radio_name) {
-            return toast({ title: "请填写可选项名", color: "danger" })
+            return toast({
+                title: locale.CreateRadioFailed,
+                color: "danger",
+            });
         }
 
-        onSubmit({ field_id: field_id, radio_name: radio_name.toString() })
+        onSubmit({ field_id: field_id, radio_name: radio_name.toString() });
     };
 
     const triggerSubmit = () => {
@@ -41,7 +41,7 @@ const RadioEditorModal = ({
                 <Form ref={formRef} onSubmit={handleCustomSubmit}>
                     <Input
                         isRequired
-                        label="新增可选项"
+                        label={locale.Title}
                         name="radio_name"
                         labelPlacement="outside"
                         variant="bordered"
@@ -49,8 +49,8 @@ const RadioEditorModal = ({
                     />
                 </Form>
             </div>
-        )
-    }
+        );
+    };
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="w-full">
             <ModalContent className="md:min-w-[400px] max-h-[60vh]">
@@ -62,18 +62,17 @@ const RadioEditorModal = ({
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" size="sm" variant="light" onPress={triggerSubmit}>
-                                保存
+                                {Locale("Common").ButtonSave}
                             </Button>
                             <Button color="danger" size="sm" variant="light" onPress={onClose}>
-                                关闭
+                                {Locale("Common").ButtonClose}
                             </Button>
                         </ModalFooter>
                     </>
                 )}
             </ModalContent>
         </Modal>
-    )
+    );
 };
-
 
 export default RadioEditorModal;
