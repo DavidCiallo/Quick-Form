@@ -16,15 +16,10 @@ import {
     TableHeader,
     TableRow,
 } from "@heroui/react";
-import {
-    FormFieldCreateResponse,
-    FormFieldListResponse,
-    FormFieldUpdateResponse,
-} from "../../../shared/router/FieldRouter";
-import { FormFieldRouter, FormRouter, RecordRouter } from "../../api/instance";
+import { FormFieldListResponse } from "../../../shared/router/FieldRouter";
+import { FormFieldRouter, RecordRouter } from "../../api/instance";
 import { toast } from "../../methods/notify";
-import { FormListResponse } from "../../../shared/router/FormRouter";
-import { RecordAllResponse, RecordGetResponse } from "../../../shared/router/RecordRouter";
+import { RecordAllResponse } from "../../../shared/router/RecordRouter";
 import { FormFieldImpl, RecordImpl } from "../../../shared/impl";
 
 const Component = () => {
@@ -44,7 +39,12 @@ const Component = () => {
             setTotal(Math.ceil(data.total / 10) || 1);
             setRecordList(data.data);
         });
-        FormFieldRouter.list({ form_name, page: 1 }, ({ list }: FormFieldListResponse) => {
+        FormFieldRouter.list({ form_name, page: 1 }, ({ success, data, message }: FormFieldListResponse) => {
+            if (!success || !data) {
+                toast({ title: message, color: "danger" });
+                return;
+            }
+            const { list } = data;
             setFieldList(list);
             if (!fieldChoose || !list.some((f) => f.id === fieldChoose.id)) {
                 setFieldChoose(list[0] || null);

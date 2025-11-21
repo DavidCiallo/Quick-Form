@@ -61,12 +61,13 @@ export interface RecordAllResponse extends BaseResponse {
 }
 
 export interface RecordGetResponse extends BaseResponse {
-    check: boolean;
-    item_id: string;
-    code: string;
-    form_name: string;
-    fields: FormFieldImpl[];
-    records: RecordImpl[];
+    data?: {
+        item_id: string;
+        code: string;
+        form_name: string;
+        fields: FormFieldImpl[];
+        records: RecordImpl[];
+    };
 }
 
 export interface RecordUpdateRequest extends BaseRequest {

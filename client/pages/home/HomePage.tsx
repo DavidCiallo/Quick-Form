@@ -1,6 +1,8 @@
+import { AuthStatus, getAuthStatus } from "../../methods/auth";
+
 const Component = () => {
     const Logo = () => <span className="text-2xl font-bold tracking-tight text-white">QuickForm</span>;
-
+    const auth = getAuthStatus();
     return (
         <div className="h-screen relative isolate overflow-hidden bg-gray-800 pt-10">
             <header className="absolute inset-x-0 top-0 z-50">
@@ -11,17 +13,18 @@ const Component = () => {
                             <Logo />
                         </a>
                     </div>
-                    <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                        <a href="/auth" className="text-sm font-semibold leading-6 text-white">
-                            Log in
-                        </a>
-                    </div>
+                    {auth !== AuthStatus.AUTH && (
+                        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                            <a href="/auth" className="text-sm font-semibold leading-6 text-white">
+                                Log in
+                            </a>
+                        </div>
+                    )}
                 </nav>
             </header>
 
             <div className="mx-auto max-w-7xl px-6 py-24 sm:py-24 lg:pb-40 lg:pt-40">
                 <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
-                    {/* 左侧：标题与 CTA */}
                     <div className="mx-auto max-w-2xl lg:mx-0 lg:col-span-6 lg:flex lg:flex-col lg:justify-center">
                         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
                             对于构建表单<span className="text-indigo-400">有点好用</span>的小工具
@@ -32,7 +35,7 @@ const Component = () => {
 
                         <div className="mt-10 flex items-center gap-x-6">
                             <a
-                                href="/auth"
+                                href="/form"
                                 className="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline"
                             >
                                 Start Free

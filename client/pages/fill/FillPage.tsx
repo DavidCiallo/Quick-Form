@@ -39,20 +39,18 @@ const Component = () => {
     async function loadRecord(code: string) {
         let id = localStorage.getItem("entry_id");
         if (!id) return;
-        await RecordRouter.history(
-            { id, code },
-            async ({ form_name, fields, records, item_id, code, check }: RecordGetResponse) => {
-                if (!check) {
-                    toast({ title: "需要正确的验证码" });
-                    setCode("");
-                    setPass(false);
-                    return;
-                }
-                setAuthData(form_name, fields, records);
-                localStorage.setItem("item_id", item_id);
-                localStorage.setItem("code", code);
-            },
-        );
+        await RecordRouter.history({ id, code }, async ({ success, data, message }: RecordGetResponse) => {
+            if (!success || !data) {
+                toast({ title: message });
+                setCode("");
+                setPass(false);
+                return;
+            }
+            const { form_name, fields, records, item_id, code } = data;
+            setAuthData(form_name, fields, records);
+            localStorage.setItem("item_id", item_id);
+            localStorage.setItem("code", code);
+        });
     }
 
     async function submitRecord(field_id: string, field_value: string) {

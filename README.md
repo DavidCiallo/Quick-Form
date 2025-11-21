@@ -1,6 +1,9 @@
 # Quick-Form
 
 ## 项目介绍
+
+一个开源的快速表单系统，只需简单配置，即可构建属于你的调查问卷/收集表单/统计工具。
+
 本项目为全栈应用，前端基于 [React](https://react.dev/) [HeroUI](https://heroicons.com/) ，后端基于 [Express](https://expressjs.com/)，使用[TypeScript](https://www.typescriptlang.org/) 进行开发，推荐使用 [Bun](https://bun.sh/)。
 
 ## 技术栈
@@ -14,7 +17,7 @@
 ### 克隆项目
 
 ```bash
-git clone https://github.com/DcolorWei/Quick-Form
+git clone https://github.com/DavidCiallo/Quick-Form
 cd Quick-Form
 ```
 
@@ -28,14 +31,15 @@ bun install
 ### 编辑环境变量
 
 新建.env文件，内容可参考.env.example；或执行
+
 ```bash
 cp .env.example .env
 ```
-但开发环境与部署环境不同，部署仅需单个端口，HTTP只需指定唯一变量SERVER_HTTP_PORT即可
 
 ### 启动开发环境
 
-####
+#### 示例用
+
 ```bash
 npm run all
 ```
@@ -63,11 +67,15 @@ npm run serve
 ```
 
 ## 构建与部署
+
 ```bash
 npm run build
 ```
-将在 dist 目录下生成前端静态打包文件，可部署到任何静态文件服务器中；同时生成bundle.mjs文件，可部署到任何支持Node.js的服务器中。
 
+构建产物提供两种部署模式：
+静态托管： dist/ 目录内容可部署至任何静态托管平台。
+服务器部署： bundle.js 文件用于部署在 Node.js 服务器上。
+本应用支持无头（Headless）部署，仅通过暴露服务端端口即可实现项目的全部功能。
 
 ## 许可证
 

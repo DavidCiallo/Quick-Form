@@ -24,42 +24,28 @@ async function history(request: RecordGetQuery): Promise<RecordGetResponse> {
         const fields = await getFieldList(form_name);
         // 鉴权不通过
         if (!code || code !== codeGenerate(item_id)) {
-            return {
-                check: false,
-                success: true,
-                form_name,
-                item_id: "",
-                code: "",
-                fields: [],
-                records: [],
-            };
+            return { success: false, message: "鉴权失败" };
         } else {
             // 鉴权通过
-            return {
-                check: true,
-                success: true,
-                form_name,
-                item_id,
-                code,
-                fields,
-                records: records,
-            };
+            const data = { success: true, form_name, item_id, code, fields, records };
+            return { success: true, data };
         }
     } else {
-        // 查不到记录，说明为新填写的表单
         const form_name = await getFormNameByField(request.id);
+        if (!form_name) {
+            return { success: false, message: "表单不存在" };
+        }
         const item_id = nanoid(6);
         const code = codeGenerate(item_id);
         const fields = await getFieldList(form_name);
-        return {
-            check: true,
-            success: !!form_name,
+        const data = {
             form_name,
-            item_id: !!form_name ? item_id : "",
-            code: !!form_name ? code : "",
+            item_id,
+            code,
             fields,
             records: [],
         };
+        return { success: true, data };
     }
 }
 

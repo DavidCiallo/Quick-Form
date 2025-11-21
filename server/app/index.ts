@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import cors from "cors";
 import path from "path";
+import { fileURLToPath } from "url";
 
 config();
 
@@ -24,8 +25,11 @@ const app = express();
 app.use(bodyParser.json()).use(cors());
 mounthttp(app, [authController, recordController, formController, fieldController, radioController]);
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const staticPath = path.join(__dirname);
+
 // HTTP-File
-const staticPath = path.join(__dirname, "..", "..", "dist");
 app.use(express.static(staticPath));
 app.use((q, s, n) => (q.path.endsWith(".mjs") ? s.status(403).send("Forbidden") : n()));
 app.get(/.*/, (q, s) => {

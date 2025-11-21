@@ -56,9 +56,11 @@ export interface FormFieldListQuery extends BaseRequest {
     page: number;
 }
 
-export interface FormFieldListResponse {
-    list: FormFieldImpl[];
-    total: number;
+export interface FormFieldListResponse extends BaseResponse {
+    data?: {
+        list: FormFieldImpl[];
+        total: number;
+    };
 }
 
 export interface FormFieldCreateRequest extends BaseRequest {
@@ -84,6 +86,4 @@ export interface FormFieldDeleteRequest extends BaseRequest {
     creater: string;
 }
 
-export interface FormFieldDeleteResponse {
-    success: boolean;
-}
+export interface FormFieldDeleteResponse extends BaseResponse {}

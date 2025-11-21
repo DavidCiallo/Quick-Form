@@ -54,12 +54,14 @@ export interface FormListQuery extends BaseRequest {
 }
 
 export interface FormListResponse extends BaseResponse {
-    list: Array<{
-        form_name: string;
-        records_num: number;
-        last_submit: number;
-    }>;
-    total: number;
+    data?: {
+        list: Array<{
+            form_name: string;
+            records_num: number;
+            last_submit: number;
+        }>;
+        total: number;
+    };
 }
 
 export interface FormCreateRequest extends BaseRequest {

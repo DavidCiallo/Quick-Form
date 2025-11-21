@@ -52,8 +52,11 @@ const Component = () => {
 
     function openRecordEditor(formname: string) {
         setFocusForm(formname);
-        FormFieldRouter.list({ form_name: formname, page: 1 }, (data: FormFieldListResponse) => {
-            const { list } = data;
+        FormFieldRouter.list({ form_name: formname, page: 1 }, ({ success, data, message }: FormFieldListResponse) => {
+            if (!success || !data) {
+                return toast({ title: message, color: "danger" });
+            }
+            const list = data.list;
             if (!list || list.length == 0) {
                 return toast({ title: "表单错误，可能不存在或者为空", color: "danger" });
             } else {
@@ -109,7 +112,11 @@ const Component = () => {
             toast({ title: "参数错误", color: "danger" });
             return;
         }
-        RecordRouter.history({ id: field_id }, async ({ item_id, code }: RecordGetResponse) => {
+        RecordRouter.history({ id: field_id }, async ({ success, data, message }: RecordGetResponse) => {
+            if (!success || !data) {
+                return toast({ title: message, color: "danger" });
+            }
+            const { item_id, code } = data;
             RecordRouter.submit({ field_id, field_value, item_id });
             const url = `${baseurl + item_id}#code:${code}`;
             navigator.clipboard.writeText(url);
@@ -118,8 +125,12 @@ const Component = () => {
     }
 
     useEffect(() => {
-        FormRouter.list({ page: 1 }, (data: FormListResponse) => {
-            setFormList(data.list);
+        FormRouter.list({ page: 1 }, ({ success, data, message }: FormListResponse) => {
+            if (!success || !data) {
+                return toast({ title: message, color: "danger" });
+            }
+            const { list } = data;
+            setFormList(list);
             if (data.list.length) {
                 localStorage.setItem("formname", data.list[0].form_name);
             }
