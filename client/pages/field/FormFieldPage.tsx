@@ -25,8 +25,11 @@ import { FormListResponse } from "../../../shared/router/FormRouter";
 import { FieldTypeList } from "../form/types";
 import { FieldType } from "../../../shared/impl/field";
 import { FormFieldRadioCreateResponse } from "../../../shared/router/RadioRouter";
+import { Locale } from "../../methods/locale";
 
 const Component = () => {
+    const locale = Locale("FormFieldPage");
+
     const [formName, setFormName] = useState<string>("");
     const [formList, setFormList] = useState<string[]>([]);
     const [formFieldList, setFormFieldList] = useState<FormFieldImpl[]>([]);
@@ -59,17 +62,26 @@ const Component = () => {
         setRadioEditorOpen(true);
     }
 
-    function renderFormField(data: FormFieldListResponse) {
-        setTotal(data.total);
-        setFormFieldList(data.list);
+    function renderFormField({ success, data, message }: FormFieldListResponse) {
+        if (!success || !data) {
+            setIsLoading(false);
+            return toast({ title: message, color: "danger" });
+        }
+        const { list, total } = data;
+        setTotal(total);
+        setFormFieldList(list);
         setIsLoading(false);
     }
 
     useEffect(() => {
-        FormRouter.list({ page: 1 }, (data: FormListResponse) => {
-            setFormList(data.list.map((i) => i.form_name));
-            if (data.list.length) {
-                const form_name = data.list[0]?.form_name;
+        FormRouter.list({ page: 1 }, ({ success, data, message }: FormListResponse) => {
+            if (!success || !data) {
+                return toast({ title: message, color: "danger" });
+            }
+            const { list } = data;
+            setFormList(list.map((i) => i.form_name));
+            if (list.length) {
+                const form_name = list[0]?.form_name;
                 const page = 1;
                 setFormName(form_name);
                 setPage(page);
@@ -81,7 +93,7 @@ const Component = () => {
 
     return (
         <div className="max-w-screen">
-            <Header name="表单管理" />
+            <Header name={locale.Title} />
             <div className="w-full flex flex-col flex-wrap px-[5vw] pt-6 pb-2">
                 <div className="flex flex-row justify-between items-center w-full py-2">
                     <div className="flex flex-row w-full">
@@ -105,7 +117,7 @@ const Component = () => {
                             selectedKeys={[formName]}
                             onSelectionChange={(keys) => chooseForm(keys.currentKey || null)}
                         >
-                            {[...formList, "创建新表单"].map((i, idx) => (
+                            {[...formList, locale.CreateNewForm].map((i, idx) => (
                                 <SelectItem
                                     key={i}
                                     className={`${idx == formList.length ? "text-primary" : ""}`}
@@ -121,7 +133,7 @@ const Component = () => {
                             variant="bordered"
                             className="text-black-500"
                         >
-                            新建字段
+                            {locale.CreateNewField}
                         </Button>
                     </div>
                 </div>
@@ -129,12 +141,12 @@ const Component = () => {
             <div className="w-full flex flex-row flex-wrap px-[5vw] py-2 justify-between">
                 <Table className="w-full" aria-label="table">
                     <TableHeader>
-                        <TableColumn align="center">字段名称</TableColumn>
-                        <TableColumn align="center">字段类型</TableColumn>
-                        <TableColumn align="center">可选择项</TableColumn>
-                        <TableColumn align="center">备注（用户可见）</TableColumn>
-                        <TableColumn align="center">提示</TableColumn>
-                        <TableColumn align="center">操作</TableColumn>
+                        <TableColumn align="center">{locale.TableHeaderFieldNameColumn}</TableColumn>
+                        <TableColumn align="center">{locale.TableHeaderFieldTypeColumn}</TableColumn>
+                        <TableColumn align="center">{locale.TableHeaderOptionsColumn}</TableColumn>
+                        <TableColumn align="center">{locale.TableHeaderRemarkColumn}</TableColumn>
+                        <TableColumn align="center">{locale.TableHeaderHintColumn}</TableColumn>
+                        <TableColumn align="center">{locale.TableHeaderActionsColumn}</TableColumn>
                     </TableHeader>
                     <TableBody
                         isLoading={isLoading}
@@ -150,7 +162,7 @@ const Component = () => {
                                 <Select
                                     variant="bordered"
                                     aria-label="select"
-                                    className="w-28 mx-auto"
+                                    className="w-36 mx-auto"
                                     defaultSelectedKeys={[
                                         FieldTypeList.find(({ type }) => type === field.field_type)?.type || "",
                                     ]}
@@ -183,14 +195,14 @@ const Component = () => {
                                         if (selectedKeys.length === 0) {
                                             return null;
                                         }
-                                        return `已设置 ${selectedKeys.length} 项`;
+                                        return `${locale.TableBodyHadSetRadio} ${selectedKeys.length} `;
                                     }}
-                                    placeholder="已设置 0 项"
+                                    placeholder={locale.TableBodyNoSetRadio}
                                     defaultSelectedKeys={field.radios
                                         .filter((radio) => radio.useful)
                                         .map((radio) => radio.radio_name)}
                                     listboxProps={{
-                                        emptyContent: <div className="text-center">无选项可用</div>,
+                                        emptyContent: <div className="text-center">{locale.TableBodyEmptyRadio}</div>,
                                         bottomContent: (
                                             <div
                                                 className="text-center cursor-pointer"
@@ -234,7 +246,7 @@ const Component = () => {
                                     <TableCell align="center">{RadioSelect}</TableCell>
                                     <TableCell align="center" className="w-1/3">
                                         <Input
-                                            placeholder="无备注"
+                                            placeholder={locale.TableBodyNoRemark}
                                             variant="bordered"
                                             defaultValue={field.comment}
                                             onValueChange={(comment) => {
@@ -244,7 +256,7 @@ const Component = () => {
                                     </TableCell>
                                     <TableCell align="center" className="w-1/3">
                                         <Input
-                                            placeholder="无提示"
+                                            placeholder={locale.TableBodyNoHint}
                                             variant="bordered"
                                             defaultValue={field.placeholder}
                                             onValueChange={(placeholder) => {
@@ -254,10 +266,10 @@ const Component = () => {
                                     </TableCell>
                                     <TableCell className="min-w-40">
                                         <Button className="mr-1" variant="bordered" color="primary" size="sm">
-                                            上升
+                                            {locale.TableBodyUponSort}
                                         </Button>
                                         <Button variant="bordered" color="primary" size="sm">
-                                            下降
+                                            {locale.TableBodyDownSort}
                                         </Button>
                                     </TableCell>
                                 </TableRow>
@@ -281,7 +293,10 @@ const Component = () => {
                                     setFormList([...formList, form_name]);
                                     chooseForm(form_name);
                                 } else {
-                                    toast({ title: "同名表单已存在", color: "danger" });
+                                    toast({
+                                        title: locale.CreateFormFailed,
+                                        color: "danger",
+                                    });
                                 }
                             });
                         }
@@ -307,7 +322,10 @@ const Component = () => {
                                         setFieldEditorOpen(false);
                                         chooseForm(form_name);
                                     } else {
-                                        toast({ title: "同名字段已存在", color: "danger" });
+                                        toast({
+                                            title: locale.CreateFieldFailed,
+                                            color: "danger",
+                                        });
                                     }
                                 },
                             );
@@ -334,7 +352,7 @@ const Component = () => {
                                         setRadioEditorOpen(false);
                                         chooseForm(formName);
                                     } else {
-                                        toast({ title: "同名选项已存在", color: "danger" });
+                                        toast({ title: locale.CreateRadioFailed, color: "danger" });
                                     }
                                 },
                             );

@@ -1,0 +1,150 @@
+{
+    "Common": {
+        "ButtonAdd": "新增",
+        "ButtonSave": "保存",
+        "ButtonConfirm": "确认",
+        "ButtonCancel": "取消",
+        "ButtonClose": "关闭",
+        "ToastSuccess": "操作成功",
+        "ToastFailed": "操作失败",
+        "ToastNetworkError": "网络异常，请稍后重试",
+        "ToastUnauthorized": "鉴权失效，请重新登录",
+        "ToastParamError": "参数错误，请检查输入",
+        "DefaultSelectPlaceholder": "请输入"
+    },
+
+    "Menu": {
+        "FormList": "表单列表",
+        "FieldManage": "表单管理",
+        "Feedback": "数据反馈"
+    },
+
+    "AuthPage": {
+        "Title": "快速表单",
+        "LoginSuccess": "登录成功",
+        "LoginFailed": "登录失败",
+        "EmailLabel": "邮箱",
+        "EmailPlaceholder": "请输入账号",
+        "EmailError": "这格式可能有些滑稽",
+        "PasswordLabel": "密码",
+        "PasswordPlaceholder": "请输入密码",
+        "PasswordError": "显然这是必填项",
+        "ForgetPasswordLinkText": "忘记密码？",
+        "ForgetPasswordErrorText": "请联系管理员🙁",
+        "SubmitButtonText": "登录"
+    },
+    "FieldType": {
+        "text": "文本",
+        "email": "邮箱",
+        "password": "密码",
+        "checkbox": "复选框",
+        "select": "单选项",
+        "mulselect": "多选项",
+        "textarea": "多行文本"
+    },
+    "FormPage": {
+        "Title": "表单列表",
+        "CreateNewForm": "新建表单",
+        "TitleCreate": "新建表单",
+        "TitleEdit": "编辑表单",
+        "RecordNumLabel": "记录数",
+        "EmptyNumLabel": "暂无记录",
+        "ViewRecordsButton": "查看",
+        "RenameButton": "重命名",
+        "CreateRecordButton": "生成链接",
+        "FormNameLabel": "表单名",
+        "FormNamePlaceholder": "请输入表单名称",
+        "ToastCopySuccess": "复制链接成功",
+        "ToastFormListEmpty": "表单错误，可能不存在或者为空",
+        "ToastCreateFormFailed": "创建表单失败，可能存在同名项",
+        "ToastEditFormFailed": "修改表单失败，可能存在同名项"
+    },
+    "FormEditor": {
+        "FormNameLabel": "表单名",
+        "FormNamePlaceholder": "请输入表单名称"
+    },
+    "CreateRecordEditor": {
+        "Title": "填写表单",
+        "CopyLinkButton": "复制链接",
+        "CreateCopyLinkButton": "创建并复制链接",
+        "CommonPlaceholder": "无需更多操作",
+        "FieldPlaceholder": "请选择字段",
+        "ValuePlaceholder": "预设值",
+        "NullSelectedType": "请选择表单类型",
+        "CommonType": "普通表单",
+        "CollectType": "记名表单"
+    },
+    "FormFieldPage": {
+        "Title": "表单管理",
+        "FieldDetail": "字段详情",
+        "CreateNewForm": "新建表单",
+        "CreateNewField": "新增字段",
+        "TableHeaderFieldNameColumn": "字段名",
+        "TableHeaderFieldTypeColumn": "字段类型",
+        "TableHeaderOptionsColumn": "可选择项",
+        "TableHeaderRemarkColumn": "备注",
+        "TableHeaderHintColumn": "提示",
+        "TableHeaderActionsColumn": "操作",
+        "TableBodyEditAction": "编辑",
+        "TableBodyDeleteAction": "删除",
+        "TableBodyHadSetRadio": "已设置项数",
+        "TableBodyNoSetRadio": "未设置选项",
+        "TableBodyEmptyRadio": "无选项可用",
+        "TableBodyNoRemark": "无备注",
+        "TableBodyNoHint": "无提示",
+        "TableBodyUponSort": "上升",
+        "TableBodyDownSort": "下降",
+        "CreateFormFailed": "创建表单失败，可能存在同名项",
+        "CreateFieldFailed": "创建字段失败，可能存在同名项",
+        "CreateRadioFailed": "创建选项失败，可能存在同名项"
+    },
+    "FormFieldRadioEditor": {
+        "Title": "新增可选项",
+        "FormNameLabel": "表单名",
+        "FormNamePlaceholder": "请选择表单名称",
+        "FieldNameLabel": "字段名",
+        "FieldNamePlaceholder": "请输入字段名称",
+        "FieldTypeLabel": "字段类型",
+        "FieldTypePlaceholder": "请选择字段类型",
+        "CreateRadioFailed": "创建可选项失败"
+    },
+    "FormFieldContent": {
+        "FieldDetail": "字段详情"
+    },
+    "FormFieldEditor": {
+        "Title": "字段编辑",
+        "FormNameLabel": "表单名",
+        "FormNamePlaceholder": "请选择表单名称",
+        "FieldNameLabel": "字段名",
+        "FieldNamePlaceholder": "请输入字段名称",
+        "FieldTypeLabel": "字段类型",
+        "FieldTypePlaceholder": "请选择字段类型"
+    },
+    "RecordPage": {
+        "Title": "数据反馈",
+        "ReloadButton": "刷新",
+        "ListFieldValueColumn": "字段值",
+        "ListUpdateTimeColumn": "更新时间",
+        "ListActionColumn": "操作",
+        "ListViewRecordButton": "查看",
+        "RecordFieldColumn": "字段",
+        "RecordValueColumn": "内容",
+        "EmptyRecordSelect": "请选择用户"
+    },
+    "FillPage": {
+        "ToastErrorSubmit": "提交失败，可能是格式错误",
+        "ToastErrorParam": "参数错误",
+        "FormSelectPlaceholder": "请选择"
+    },
+    "CheckModal": {
+        "Title": "验证码"
+    },
+    "HomePage": {
+        "MainText1": "对于构建表单",
+        "MainText2": "有点好用",
+        "MainText3": "的小工具",
+        "Slogan1": "小巧，精致，且快速。",
+        "Slogan2": "无需复杂的代码与编辑，只求最快速开启数据业务。",
+        "ViewSource": "查看源代码"
+    }
+}

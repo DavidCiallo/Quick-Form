@@ -2,21 +2,23 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerBody, useDisclosure } from "
 
 import MenuIcon from "../icons/menu";
 import { Link } from "react-router-dom";
+import { Locale } from "../../methods/locale";
 
 export const MenuComp = ({ now }: { now?: string }) => {
+    const locale = Locale("Menu");
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const menuList = [
         {
-            name: "表单列表",
+            name: locale.FormList,
             link: "/form",
         },
         {
-            name: "表单管理",
+            name: locale.FieldManage,
             link: "/field",
         },
         {
-            name: "数据反馈",
+            name: locale.Feedback,
             link: "/record",
         },
     ];

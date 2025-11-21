@@ -6,8 +6,10 @@ import { RecordGetResponse } from "../../../shared/router/RecordRouter";
 import CheckModal from "./CheckModal";
 import { toast } from "../../methods/notify";
 import { useNavigate } from "react-router-dom";
+import { Locale } from "../../methods/locale";
 
 const Component = () => {
+    const locale = Locale("FillPage");
     const navigate = useNavigate();
 
     const [formName, setFormName] = useState<string>("");
@@ -55,14 +57,21 @@ const Component = () => {
 
     async function submitRecord(field_id: string, field_value: string) {
         const item_id = localStorage.getItem("item_id");
-        if (!item_id) return toast({ title: "错误提交", color: "danger" });
+        if (!item_id)
+            return toast({
+                title: locale.ToastErrorSubmit,
+                color: "danger",
+            });
         await RecordRouter.submit({ item_id, field_id, field_value });
     }
 
     useEffect(() => {
         const id = new URLSearchParams(window.location?.search)?.get("t");
         if (!id) {
-            return toast({ title: "非法参数", color: "danger" });
+            return toast({
+                title: locale.ToastErrorParam,
+                color: "danger",
+            });
         }
         localStorage.setItem("entry_id", id);
         const code = localStorage.getItem("code") || "";
@@ -118,7 +127,7 @@ const Component = () => {
                         className="w-full"
                         defaultSelectedKeys={[records.find((r) => r.field_id === field.id)?.field_value || ""]}
                         onSelectionChange={({ currentKey }) => currentKey && submitRecord(field.id, currentKey)}
-                        placeholder={field.placeholder || "请选择"}
+                        placeholder={field.placeholder || Locale("Common").DefaultSelectPlaceholder}
                     >
                         {(field.radios || []).map((radio) => (
                             <SelectItem key={radio.id}>{radio.radio_name}</SelectItem>

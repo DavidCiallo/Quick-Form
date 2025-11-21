@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Button, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { FormCreateRequest, FormUpdateRequest } from "../../../shared/router/FormRouter";
 import { toast } from "../../methods/notify";
+import { Locale } from "../../methods/locale";
 
 interface props {
     isOpen: boolean;
@@ -10,16 +11,19 @@ interface props {
 }
 
 const FormEditorModal = ({ isOpen, onOpenChange, onSubmit }: props) => {
+    const locale = Locale("FormEditor");
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleCustomSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
         if (event) {
             event.preventDefault();
-            return;
         }
         const { form_name } = Object.fromEntries(new FormData(formRef.current!).entries());
         if (!form_name) {
-            return toast({ title: "请填写表单名", color: "danger" });
+            return toast({
+                title: Locale("Common").ToastParamError,
+                color: "danger",
+            });
         }
 
         onSubmit({ form_name: form_name.toString() });
@@ -35,10 +39,10 @@ const FormEditorModal = ({ isOpen, onOpenChange, onSubmit }: props) => {
                 <Form ref={formRef} onSubmit={handleCustomSubmit}>
                     <Input
                         isRequired
-                        label="表单名"
+                        label={locale.FormNameLabel}
                         name="form_name"
                         labelPlacement="outside"
-                        placeholder=" "
+                        placeholder={locale.FormNamePlaceholder}
                         variant="bordered"
                         className="mb-4"
                     />
@@ -57,10 +61,10 @@ const FormEditorModal = ({ isOpen, onOpenChange, onSubmit }: props) => {
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" size="sm" variant="light" onPress={triggerSubmit}>
-                                保存
+                                {Locale("Common").ButtonSave}
                             </Button>
                             <Button color="danger" size="sm" variant="light" onPress={onClose}>
-                                关闭
+                                {Locale("Common").ButtonCancel}
                             </Button>
                         </ModalFooter>
                     </>

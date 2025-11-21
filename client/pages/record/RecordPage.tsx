@@ -21,8 +21,11 @@ import { FormFieldRouter, RecordRouter } from "../../api/instance";
 import { toast } from "../../methods/notify";
 import { RecordAllResponse } from "../../../shared/router/RecordRouter";
 import { FormFieldImpl, RecordImpl } from "../../../shared/impl";
+import { Locale } from "../../methods/locale";
 
 const Component = () => {
+    const locale = Locale("RecordPage");
+
     const [recordList, setRecordList] = useState<Array<{ item_id: string; records: RecordImpl[] }>>([]);
     const [fieldList, setFieldList] = useState<Array<FormFieldImpl>>([]);
     const [fieldChoose, setFieldChoose] = useState<FormFieldImpl | null>(null);
@@ -58,7 +61,7 @@ const Component = () => {
 
     return (
         <div className="max-w-screen">
-            <Header name="数据反馈" />
+            <Header name={locale.Title} />
             <div className="w-full flex flex-col flex-wrap px-[5vw] pt-6">
                 <div className="flex flex-row justify-between items-center w-full py-2">
                     <Select
@@ -78,7 +81,7 @@ const Component = () => {
                         className="text-black-500"
                         onClick={() => loadPage(page)}
                     >
-                        刷新
+                        {locale.ReloadButton}
                     </Button>
                 </div>
                 <div className="mt-2 flex flex-row justify-between items-start gap-4">
@@ -92,9 +95,9 @@ const Component = () => {
                             }
                         >
                             <TableHeader>
-                                <TableColumn align="center">字段值</TableColumn>
-                                <TableColumn align="center">更新时间</TableColumn>
-                                <TableColumn align="center">操作</TableColumn>
+                                <TableColumn align="center">{locale.ListFieldValueColumn}</TableColumn>
+                                <TableColumn align="center">{locale.ListUpdateTimeColumn}</TableColumn>
+                                <TableColumn align="center">{locale.ListActionColumn}</TableColumn>
                             </TableHeader>
                             <TableBody className="h-full">
                                 {recordList.map((i) => {
@@ -117,7 +120,7 @@ const Component = () => {
                                                     onClick={() => setItemChoose(i.item_id)}
                                                     color={i.item_id === itemChoose ? "primary" : "default"}
                                                 >
-                                                    查看
+                                                    {locale.ListViewRecordButton}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -130,10 +133,10 @@ const Component = () => {
                     <Card className="w-2/3 h-[70vh]">
                         <Table aria-label="table" className="h-full">
                             <TableHeader>
-                                <TableColumn align="center">字段</TableColumn>
-                                <TableColumn align="center">内容</TableColumn>
+                                <TableColumn align="center">{locale.RecordFieldColumn}</TableColumn>
+                                <TableColumn align="center">{locale.RecordValueColumn}</TableColumn>
                             </TableHeader>
-                            <TableBody className="h-full" emptyContent={<div>请选择用户</div>}>
+                            <TableBody className="h-full" emptyContent={<div>{locale.EmptyRecordSelect}</div>}>
                                 {fieldList
                                     .filter(() => itemChoose)
                                     .map(({ id: field_id, field_name, radios }) => {

@@ -1,6 +1,8 @@
 import { AuthStatus, getAuthStatus } from "../../methods/auth";
+import { Locale } from "../../methods/locale";
 
 const Component = () => {
+    const locale = Locale("HomePage");
     const Logo = () => <span className="text-2xl font-bold tracking-tight text-white">QuickForm</span>;
     const auth = getAuthStatus();
     return (
@@ -27,10 +29,12 @@ const Component = () => {
                 <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
                     <div className="mx-auto max-w-2xl lg:mx-0 lg:col-span-6 lg:flex lg:flex-col lg:justify-center">
                         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                            对于构建表单<span className="text-indigo-400">有点好用</span>的小工具
+                            {locale.MainText1}
+                            <span className="text-indigo-400">{locale.MainText2}</span>
+                            {locale.MainText3}
                         </h1>
-                        <p className="mt-6 text-lg leading-8 text-gray-300">小巧，精致，且快速。</p>
-                        <p className="text-lg leading-8 text-gray-300">无需复杂的代码，只需要专注于数据业务。</p>
+                        <p className="mt-6 text-lg leading-8 text-gray-300">{locale.Slogan1}</p>
+                        <p className="text-lg leading-8 text-gray-300">{locale.Slogan2}</p>
                         <p className="mt-6 text-md leading-8 text-gray-300">Powered by React. </p>
 
                         <div className="mt-10 flex items-center gap-x-6">
@@ -46,7 +50,7 @@ const Component = () => {
                                 target="_blank"
                                 className="text-sm font-semibold leading-6 text-white"
                             >
-                                查看源代码 <span aria-hidden="true">→</span>
+                                {locale.ViewSource} <span aria-hidden="true">→</span>
                             </a>
                         </div>
                     </div>
@@ -58,9 +62,9 @@ const Component = () => {
                                 <span className="h-3 w-3 rounded-full bg-yellow-400"></span>
                                 <span className="h-3 w-3 rounded-full bg-green-500"></span>
                             </div>
-                            <pre className="mt-4 overflow-x-auto text-sm">
+                            <pre className="mt-4 overflow-x-auto text-sm overflow-x-hidden">
                                 <code className="text-indigo-400">
-                                    {`import { FormProvider, useForm } from 'formflow';\n\nconst MySurvey = ({ formId }) => {\n  const { submit } = useForm(formId);\n  \n  return (\n    <div className="p-8 bg-white/5 rounded-lg">\n      <h2 className="text-xl text-white">产品反馈表</h2>\n      <FormProvider formId={formId}>\n        {/* ... form fields ... */}\n        <button onClick={submit} \n          className="mt-6 py-2 bg-indigo-500 text-white rounded">\n          提交问卷\n        </button>\n      </FormProvider>\n    </div>\n  );\n};`}
+                                    {`import { FormProvider, useForm } from 'formflow';\n\nconst MySurvey = ({ formId }) => {\n  const { submit } = useForm(formId);\n  \n  return (\n    <div className="p-8 bg-white/5 rounded-lg">\n      <h2 className="text-xl text-white">FeedBack Table</h2>\n      <FormProvider formId={formId}>\n        {/* ... form fields ... */}\n        <button onClick={submit} className="m-2 text-white rounded">\n          Submit\n        </button>\n      </FormProvider>\n    </div>\n  );\n};`}
                                 </code>
                             </pre>
                         </div>

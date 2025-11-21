@@ -6,22 +6,24 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "../../methods/notify";
 import { LoginResult } from "../../../shared/router/AuthRouter";
 import { setAuthStatus, setUserInfo } from "../../methods/auth";
+import { Locale } from "../../methods/locale";
 
 export default function Component() {
     const navigate = useNavigate();
-
+    const locale = Locale("AuthPage");
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { email, password } = Object.fromEntries(new FormData(event.currentTarget));
         AuthRouter.login({ email: email.toString(), password: password.toString() });
         window.addEventListener("login", async (e) => {
             const { success, data, message } = (e as CustomEvent).detail as LoginResult;
+            console.log(locale.LoginSuccess);
             if (!success || !data) {
-                toast({ title: message, color: "danger" });
+                toast({ title: message || locale.LoginFailed, color: "danger" });
                 return;
             }
             const { token } = data;
-            toast({ title: "登录成功", color: "success" });
+            toast({ title: locale.LoginSuccess, color: "success" });
             await new Promise((r) => setTimeout(r, 1000));
             setAuthStatus({ access_token: token, expires_in: 3600 });
             setUserInfo({ email: email.toString() });
@@ -36,40 +38,44 @@ export default function Component() {
                     <span aria-label="emoji" className="mr-4" role="img">
                         📝
                     </span>
-                    快速表单
+                    {locale.Title}
                 </p>
                 <Form className="flex flex-col gap-4" validationBehavior="native" onSubmit={handleSubmit}>
                     <Input
                         isRequired
-                        label="邮箱"
+                        label={locale.EmailLabel}
                         labelPlacement="outside"
                         name="email"
-                        placeholder="请输入账号"
+                        placeholder={locale.EmailPlaceholder}
                         type="email"
                         variant="bordered"
-                        errorMessage={() => "这有些滑稽"}
+                        errorMessage={() => locale.EmailError}
                     />
                     <Input
                         isRequired
-                        label="密码"
+                        label={locale.PasswordLabel}
                         labelPlacement="outside"
                         name="password"
-                        placeholder="请输入密码"
+                        placeholder={locale.PasswordPlaceholder}
                         type="password"
                         variant="bordered"
-                        errorMessage={() => "显然这是必填项"}
+                        errorMessage={() => locale.PasswordError}
                     />
-                    <div className="flex w-full items-center justify-end px-1 py-2">
-                        <Link
-                            className="text-default-500 cursor-pointer"
-                            size="sm"
-                            onClick={() => toast({ title: "请联系管理员🙁", color: "danger" })}
+                    <div className="flex w-full items-center justify-end">
+                        <div
+                            className="text-default-500 text-sm cursor-pointer"
+                            onClick={() =>
+                                toast({
+                                    title: locale.ForgetPasswordErrorText,
+                                    color: "danger",
+                                })
+                            }
                         >
-                            忘记密码？
-                        </Link>
+                            {locale.ForgetPasswordLinkText}
+                        </div>
                     </div>
                     <Button className="w-full" color="primary" type="submit">
-                        登录
+                        {locale.SubmitButtonText}
                     </Button>
                 </Form>
             </div>
