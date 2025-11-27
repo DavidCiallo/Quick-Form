@@ -54,14 +54,28 @@ const Component = () => {
         localStorage.setItem("code", newCode);
     }
 
-    async function submitRecord(field_id: string, field_value: string) {
+    async function submitRecord(field_id: string, field_value: number | string | boolean) {
         const item_id = localStorage.getItem("item_id");
         if (!item_id)
             return toast({
                 title: locale.ToastErrorSubmit,
                 color: "danger",
             });
-        await RecordRouter.submit({ item_id, field_id, field_value });
+        const { success } = await RecordRouter.submit({ item_id, field_id, field_value });
+        if (!success) {
+            return toast({
+                title: locale.ToastErrorSubmit,
+                color: "danger",
+            });
+        }
+        const exist = records.find((i) => i.field_id === field_id);
+        if (exist) {
+            exist.field_value = field_value;
+            setRecords(records);
+        } else {
+            records.push({ id: "", item_id, field_id, field_value, create_time: 0, update_time: 0 });
+            setRecords(records);
+        }
     }
 
     useEffect(() => {
@@ -73,34 +87,33 @@ const Component = () => {
             });
         }
         localStorage.setItem("entry_id", id);
-        const code = localStorage.getItem("code") || "";
-        loadRecord(code);
+        loadRecord(localStorage.getItem("code") || "");
     }, []);
 
-    const pagination = (
-        <Pagination
-            initialPage={1}
-            total={Math.ceil(total / 10)}
-            onChange={(page: number) => {
-                setPage(page);
-            }}
-        />
-    );
-
     function renderControl(field: FormFieldImpl) {
+        const field_value = records.find((r) => r.field_id === field.id)?.field_value || "";
         switch (field.field_type) {
             case "text": {
                 return (
-                    <Input
-                        label={field.field_name}
-                        type="text"
-                        variant="bordered"
-                        labelPlacement="outside"
-                        placeholder={field.placeholder || " "}
-                        defaultValue={records.find((r) => r.field_id === field.id)?.field_value}
-                        onValueChange={(text) => submitRecord(field.id, text)}
-                        className="w-full"
-                    />
+                    <div className="w-full flex flex-col">
+                        <label className="text-sm pb-2">
+                            <span>{field.field_name}</span>
+                            <span className="text-red-600">{field.required ? "*" : ""}</span>
+                        </label>
+                        <label className="text-xs pb-2">
+                            <span className="text-gray-500">{field.comment}</span>
+                        </label>
+                        <Input
+                            type="text"
+                            variant="bordered"
+                            labelPlacement="outside"
+                            isRequired={field.required}
+                            placeholder={field.placeholder || " "}
+                            defaultValue={String(field_value)}
+                            onBlur={(e) => e?.target?.value && submitRecord(field.id, e.target.value)}
+                            className="w-full"
+                        />
+                    </div>
                 );
             }
             case "email": {
@@ -120,11 +133,11 @@ const Component = () => {
             case "select": {
                 return (
                     <Select
-                        label={field.field_name}
                         variant="bordered"
                         labelPlacement="outside"
                         className="w-full"
-                        defaultSelectedKeys={[records.find((r) => r.field_id === field.id)?.field_value || ""]}
+                        isRequired={field.required}
+                        defaultSelectedKeys={[String(field_value)]}
                         onSelectionChange={({ currentKey }) => currentKey && submitRecord(field.id, currentKey)}
                         placeholder={field.placeholder || Locale("Common").DefaultSelectPlaceholder}
                     >
@@ -141,20 +154,22 @@ const Component = () => {
             <div className="w-full flex flex-col px-2 py-2">
                 <div className="text-lg mx-auto font-bold py-4">{formName}</div>
                 <div className="flex flex-col">
-                    {fieldList.map((field, index) => {
-                        return (
-                            <div className="w-full flex flex-row flex-wrap pt-2" key={index}>
-                                {renderControl(field)}
-                            </div>
-                        );
-                    })}
+                    {fieldList
+                        .slice((page - 1) * 10, page * 10)
+                        .filter((i) => !i.disabled)
+                        .map((field) => {
+                            return (
+                                <div className="w-full flex flex-row flex-wrap pt-3" key={field.id}>
+                                    {renderControl(field)}
+                                </div>
+                            );
+                        })}
                 </div>
             </div>
-            <div className="w-full flex flex-col flex-wrap px-[5vw] pt-6 pb-2">
-                <div className="flex flex-row justify-between items-center w-full py-2">
-                    <div className="flex flex-row w-full">{!!total && pagination}</div>
-                    <div className="flex flex-row"></div>
-                </div>
+            <div className="flex flex-row justify-center items-center w-full py-2">
+                {!!total && (
+                    <Pagination showControls initialPage={1} total={Math.ceil(total / 10)} onChange={setPage} />
+                )}
             </div>
             {!pass && <CheckModal value={code} change={changeCode} />}
         </div>

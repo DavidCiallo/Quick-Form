@@ -56,7 +56,7 @@ const Component = () => {
         if (!list || list.length == 0) {
             return toast({ title: locale.ToastFormListEmpty, color: "danger" });
         } else {
-            setFieldList(list);
+            setFieldList(list.filter((i) => !i.disabled && i.field_type == "text"));
             setNewRecordOpen(true);
         }
     }
